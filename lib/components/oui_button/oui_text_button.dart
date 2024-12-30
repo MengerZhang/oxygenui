@@ -8,6 +8,8 @@ class OuiTextButton extends OuiButton {
       {super.key,
       super.width,
       super.height,
+      super.radius,
+      super.theme,
       super.mainAxisAlignment,
       super.crossAxisAlignment,
       super.onTap,
@@ -23,6 +25,8 @@ class _OuiTextButtonState extends State<OuiTextButton> {
     return OuiButton(
       onTap: widget.onTap,
       width: widget.width,
+      radius: widget.radius,
+      theme: widget.theme,
       mainAxisAlignment: widget.mainAxisAlignment,
       crossAxisAlignment: widget.crossAxisAlignment,
       children: [

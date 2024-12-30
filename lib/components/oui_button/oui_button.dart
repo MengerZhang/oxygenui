@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:oxygenui/components/oui_button/oui_button_status.dart';
+import 'package:oxygenui/components/oui_button/oui_button_theme.dart';
 import 'package:oxygenui/theme/oui_theme.dart';
 
 class OuiButton extends StatefulWidget {
-  // 自定义宽度
+  // Width
   final double? width;
-  // 自定义高度
+  // Height
   final double? height;
-  // 圆角
+  // BorderRadius
   final double? radius;
-  // 点击事件
+  // Theme
+  final OuiButtonTheme theme;
+  // Click Event
   final void Function()? onTap;
-  // 主轴对齐，默认居中
+  // MainAxisAlignment, default is center
   final MainAxisAlignment mainAxisAlignment;
-  // 交叉轴队其，默认剧中
+  // CrossAxisAlignment, default is center
   final CrossAxisAlignment crossAxisAlignment;
-  // 子级Widget列表
+  // Children Widgets
   final List<Widget> children;
   const OuiButton(
       {super.key,
       this.width,
       this.height,
       this.radius,
+      this.theme = OuiButtonTheme.primary,
       this.onTap,
       this.mainAxisAlignment = MainAxisAlignment.center,
       this.crossAxisAlignment = CrossAxisAlignment.center,
@@ -35,13 +39,71 @@ class _OuiButtonState extends State<OuiButton> {
   OuiButtonStatus status = OuiButtonStatus.normal;
 
   OuiColorSet generateBackground() {
-    if (status == OuiButtonStatus.normal) {
+    // Primary
+    // Normal
+    if (widget.theme == OuiButtonTheme.primary &&
+        status == OuiButtonStatus.normal) {
       return OuiTheme.primaryColor;
     }
-    if (status == OuiButtonStatus.active) {
-      return OuiTheme.navigationColor;
+    // Active
+    if (widget.theme == OuiButtonTheme.primary &&
+        status == OuiButtonStatus.active) {
+      return OuiTheme.primaryActiveColor;
     }
+
+    // Disabled
+    // Normal
+    if (widget.theme == OuiButtonTheme.disabled &&
+        status == OuiButtonStatus.normal) {
+      return OuiTheme.disabledColor;
+    }
+    // Active
+    if (widget.theme == OuiButtonTheme.disabled &&
+        status == OuiButtonStatus.active) {
+      return OuiTheme.disabledActiveColor;
+    }
+
+    // Warning
+    // Normal
+    if (widget.theme == OuiButtonTheme.warning &&
+        status == OuiButtonStatus.normal) {
+      return OuiTheme.warningColor;
+    }
+    // Active
+    if (widget.theme == OuiButtonTheme.warning &&
+        status == OuiButtonStatus.active) {
+      return OuiTheme.warningActiveColor;
+    }
+
+    // Danger
+    // Normal
+    if (widget.theme == OuiButtonTheme.danger &&
+        status == OuiButtonStatus.normal) {
+      return OuiTheme.dangerColor;
+    }
+    // Active
+    if (widget.theme == OuiButtonTheme.danger &&
+        status == OuiButtonStatus.active) {
+      return OuiTheme.dangerActiveColor;
+    }
+
     return OuiTheme.primaryColor;
+  }
+
+  List<BoxShadow> generateBoxShadow() {
+    if (widget.theme == OuiButtonTheme.primary) {
+      return OuiTheme.primaryBoxShadow;
+    }
+    if (widget.theme == OuiButtonTheme.disabled) {
+      return OuiTheme.disabledBoxShadow;
+    }
+    if (widget.theme == OuiButtonTheme.warning) {
+      return OuiTheme.warningBoxShadow;
+    }
+    if (widget.theme == OuiButtonTheme.danger) {
+      return OuiTheme.dangerBoxShadow;
+    }
+    return OuiTheme.primaryBoxShadow;
   }
 
   @override
@@ -73,7 +135,7 @@ class _OuiButtonState extends State<OuiButton> {
               color: generateBackground().main,
               borderRadius:
                   BorderRadius.circular(widget.radius ?? OuiTheme.buttonRadius),
-              boxShadow: OuiTheme.primaryBoxShadow),
+              boxShadow: generateBoxShadow()),
           child: Row(
             mainAxisAlignment: widget.mainAxisAlignment,
             crossAxisAlignment: widget.crossAxisAlignment,
