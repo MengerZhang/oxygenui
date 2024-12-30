@@ -1,0 +1,1 @@
+enum OuiFooterDirection { row, column }
