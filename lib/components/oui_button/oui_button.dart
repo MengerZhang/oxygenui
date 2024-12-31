@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:oxygenui/components/oui_button/oui_button_size.dart';
 import 'package:oxygenui/components/oui_button/oui_button_status.dart';
 import 'package:oxygenui/components/oui_button/oui_button_theme.dart';
 import 'package:oxygenui/theme/oui_theme.dart';
+
+typedef OuiButtonStatusChangedCallback = void Function(OuiButtonStatus status);
 
 class OuiButton extends StatefulWidget {
   // Width
@@ -10,137 +13,203 @@ class OuiButton extends StatefulWidget {
   final double? height;
   // BorderRadius
   final double? radius;
+  // Size
+  final OuiButtonSize size;
   // Theme
   final OuiButtonTheme theme;
+  // Color
+  final OuiColorSet? color;
+  // Active Color
+  final OuiColorSet? activeColor;
+  // BoxShadow
+  final List<BoxShadow>? boxShadow;
   // Click Event
   final void Function()? onTap;
+  // Status Change Event
+  final OuiButtonStatusChangedCallback? onStatusChange;
   // MainAxisAlignment, default is center
   final MainAxisAlignment mainAxisAlignment;
   // CrossAxisAlignment, default is center
   final CrossAxisAlignment crossAxisAlignment;
   // Children Widgets
-  final List<Widget> children;
+  final String text;
   const OuiButton(
       {super.key,
       this.width,
       this.height,
       this.radius,
+      this.size = OuiButtonSize.medium,
       this.theme = OuiButtonTheme.primary,
+      this.color,
+      this.activeColor,
+      this.boxShadow,
       this.onTap,
+      this.onStatusChange,
       this.mainAxisAlignment = MainAxisAlignment.center,
       this.crossAxisAlignment = CrossAxisAlignment.center,
-      this.children = const []});
+      this.text = "OuiButton"});
 
   @override
   State<OuiButton> createState() => _OuiButtonState();
 }
 
-class _OuiButtonState extends State<OuiButton> {
+class _OuiButtonState extends State<OuiButton>
+    with SingleTickerProviderStateMixin {
   OuiButtonStatus status = OuiButtonStatus.normal;
 
-  OuiColorSet generateBackground() {
-    // Primary
-    // Normal
-    if (widget.theme == OuiButtonTheme.primary &&
-        status == OuiButtonStatus.normal) {
-      return OuiTheme.primaryColor;
-    }
-    // Active
-    if (widget.theme == OuiButtonTheme.primary &&
-        status == OuiButtonStatus.active) {
-      return OuiTheme.primaryActiveColor;
-    }
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<Color?> _backgroundColorAnimation;
+  late Animation<Color?> _textColorAnimation;
 
-    // Disabled
-    // Normal
-    if (widget.theme == OuiButtonTheme.disabled &&
-        status == OuiButtonStatus.normal) {
-      return OuiTheme.disabledColor;
-    }
-    // Active
-    if (widget.theme == OuiButtonTheme.disabled &&
-        status == OuiButtonStatus.active) {
-      return OuiTheme.disabledActiveColor;
-    }
-
-    // Warning
-    // Normal
-    if (widget.theme == OuiButtonTheme.warning &&
-        status == OuiButtonStatus.normal) {
-      return OuiTheme.warningColor;
-    }
-    // Active
-    if (widget.theme == OuiButtonTheme.warning &&
-        status == OuiButtonStatus.active) {
-      return OuiTheme.warningActiveColor;
-    }
-
-    // Danger
-    // Normal
-    if (widget.theme == OuiButtonTheme.danger &&
-        status == OuiButtonStatus.normal) {
-      return OuiTheme.dangerColor;
-    }
-    // Active
-    if (widget.theme == OuiButtonTheme.danger &&
-        status == OuiButtonStatus.active) {
-      return OuiTheme.dangerActiveColor;
-    }
-
-    return OuiTheme.primaryColor;
+  OuiColorSet generateColor() {
+    return OuiColorSet(
+        main: _backgroundColorAnimation.value ??
+            generateNormalColorByTheme().main,
+        sub: _textColorAnimation.value ?? generateNormalColorByTheme().sub);
   }
 
   List<BoxShadow> generateBoxShadow() {
     if (widget.theme == OuiButtonTheme.primary) {
-      return OuiTheme.primaryBoxShadow;
+      return widget.boxShadow ?? OuiTheme.primaryBoxShadow;
     }
     if (widget.theme == OuiButtonTheme.disabled) {
-      return OuiTheme.disabledBoxShadow;
+      return widget.boxShadow ?? OuiTheme.disabledBoxShadow;
     }
     if (widget.theme == OuiButtonTheme.warning) {
-      return OuiTheme.warningBoxShadow;
+      return widget.boxShadow ?? OuiTheme.warningBoxShadow;
     }
     if (widget.theme == OuiButtonTheme.danger) {
-      return OuiTheme.dangerBoxShadow;
+      return widget.boxShadow ?? OuiTheme.dangerBoxShadow;
     }
-    return OuiTheme.primaryBoxShadow;
+    return widget.boxShadow ?? OuiTheme.primaryBoxShadow;
+  }
+
+  EdgeInsets generatePadding() {
+    if (widget.size == OuiButtonSize.small) {
+      return const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+    }
+    if (widget.size == OuiButtonSize.medium) {
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    }
+    if (widget.size == OuiButtonSize.large) {
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 16);
+    }
+    return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+  }
+
+  OuiColorSet generateNormalColorByTheme() {
+    if (widget.theme == OuiButtonTheme.primary) {
+      return widget.color ?? OuiTheme.primaryColor;
+    }
+    if (widget.theme == OuiButtonTheme.disabled) {
+      return widget.color ?? OuiTheme.disabledColor;
+    }
+    if (widget.theme == OuiButtonTheme.warning) {
+      return widget.color ?? OuiTheme.warningColor;
+    }
+    if (widget.theme == OuiButtonTheme.danger) {
+      return widget.color ?? OuiTheme.dangerColor;
+    }
+    return widget.color ?? OuiTheme.primaryColor;
+  }
+
+  OuiColorSet generateActiveColorByTheme() {
+    if (widget.theme == OuiButtonTheme.primary) {
+      return widget.activeColor ?? OuiTheme.primaryActiveColor;
+    }
+    if (widget.theme == OuiButtonTheme.disabled) {
+      return widget.activeColor ?? OuiTheme.disabledActiveColor;
+    }
+    if (widget.theme == OuiButtonTheme.warning) {
+      return widget.activeColor ?? OuiTheme.warningActiveColor;
+    }
+    if (widget.theme == OuiButtonTheme.danger) {
+      return widget.activeColor ?? OuiTheme.dangerActiveColor;
+    }
+    return widget.activeColor ?? OuiTheme.primaryActiveColor;
   }
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _scaleAnimation = Tween(begin: 1.0, end: 0.95).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    _backgroundColorAnimation = ColorTween(
+            begin: generateNormalColorByTheme().main,
+            end: generateActiveColorByTheme().main)
+        .animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _textColorAnimation = ColorTween(
+            begin: generateNormalColorByTheme().sub,
+            end: generateActiveColorByTheme().sub)
+        .animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (details) {
-        setState(() {
-          status = OuiButtonStatus.active;
-        });
-      },
-      onTapUp: (details) {
-        Future.delayed(const Duration(milliseconds: 100), () {
+        onTapDown: (details) {
+          setState(() {
+            status = OuiButtonStatus.active;
+          });
+          widget.onStatusChange?.call(status);
+          _animationController.forward(from: 0.0);
+        },
+        onTapUp: (details) {
           setState(() {
             status = OuiButtonStatus.normal;
           });
-        });
-      },
-      onTap: widget.onTap,
-      child: Container(
-          width: widget.width,
-          height: widget.height ?? OuiTheme.buttonHeight,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-              color: generateBackground().main,
-              borderRadius:
-                  BorderRadius.circular(widget.radius ?? OuiTheme.buttonRadius),
-              boxShadow: generateBoxShadow()),
-          child: Row(
-            mainAxisAlignment: widget.mainAxisAlignment,
-            crossAxisAlignment: widget.crossAxisAlignment,
-            children: widget.children,
-          )),
-    );
+          widget.onStatusChange?.call(status);
+          _animationController.reverse(from: 1.0);
+        },
+        onTap: widget.onTap,
+        child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (BuildContext context, Widget? child) {
+              return ScaleTransition(
+                scale: _scaleAnimation,
+                child: Container(
+                    width: widget.width,
+                    // height: widget.height ?? OuiTheme.buttonHeight,
+                    padding: generatePadding(),
+                    decoration: BoxDecoration(
+                        color: generateColor().main,
+                        borderRadius: BorderRadius.circular(
+                            widget.radius ?? OuiTheme.buttonRadius),
+                        boxShadow: generateBoxShadow()),
+                    child: Row(
+                      mainAxisAlignment: widget.mainAxisAlignment,
+                      crossAxisAlignment: widget.crossAxisAlignment,
+                      children: [
+                        Text(
+                          widget.text,
+                          style: TextStyle(color: generateColor().sub),
+                        )
+                      ],
+                    )),
+              );
+            }));
   }
 }
