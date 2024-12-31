@@ -1,6 +1,6 @@
 # OxygenUI
 
-OxygenUI is a flutter mobile components library, style based shadcn
+OxygenUI is a flutter mobile components library
 
 ## Getting started
 
