@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 class OuiColors {
   // Primary
-  static const Color primary = Color(0xff3F51B5);
+  static const Color primary = Color(0xff121212);
   static const Color primaryReverse = Color(0xffffffff);
-  static const Color primaryActive = Color(0xee3F51B5);
+  static const Color primaryActive = Color(0xee121212);
   static const Color primaryActiveReverse = Color(0xffffffff);
 
   // Disabled
-  static const Color disabled = Color(0xff9E9E9E);
-  static const Color disabledReverse = Color(0xff757575);
-  static const Color disabledActive = Color(0xff9E9E9E);
-  static const Color disabledActiveReverse = Color(0xff757575);
+  static const Color disabled = Color(0xfff0f0f0);
+  static const Color disabledReverse = Color(0xff999999);
+  static const Color disabledActive = Color(0xfff0f0f0);
+  static const Color disabledActiveReverse = Color(0xff999999);
 
   // Warning
-  static const Color warning = Color(0xffff9800);
-  static const Color warningReverse = Color(0xffffffff);
-  static const Color warningActive = Color(0xeeff9800);
-  static const Color warningActiveReverse = Color(0xffffffff);
+  static const Color warning = Color(0xffffd700);
+  static const Color warningReverse = Color(0xff333333);
+  static const Color warningActive = Color(0xeeffd700);
+  static const Color warningActiveReverse = Color(0xff333333);
 
   // Danger
-  static const Color danger = Color(0xffF44336);
+  static const Color danger = Color(0xffff4500);
   static const Color dangerReverse = Color(0xffffffff);
-  static const Color dangerActive = Color(0xeeF44336);
+  static const Color dangerActive = Color(0xeeff4500);
   static const Color dangerActiveReverse = Color(0xffffffff);
 }
 
@@ -66,6 +66,13 @@ class OuiTheme {
   // Navigation Color, Color of Appbar or Tabbar
   static const OuiColorSet navigationColor =
       OuiColorSet(main: Colors.white, sub: OuiColors.primary);
+
+  // Default row gap for OuiRow
+  static const double rowGap = 8.0;
+  // Default column gap for OuiColumn
+  static const double columnGap = 8.0;
+  // Button Gap between icon and text
+  static const double buttonGap = 4.0;
 
   // Default Button Radius
   static const double buttonRadius = 6;

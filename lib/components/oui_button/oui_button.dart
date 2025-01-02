@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oxygenui/components/oui_button/oui_button_size.dart';
 import 'package:oxygenui/components/oui_button/oui_button_status.dart';
 import 'package:oxygenui/components/oui_button/oui_button_theme.dart';
+import 'package:oxygenui/components/oui_spacer/oui_spacer.dart';
 import 'package:oxygenui/theme/oui_theme.dart';
 
 typedef OuiButtonStatusChangedCallback = void Function(OuiButtonStatus status);
@@ -23,6 +24,8 @@ class OuiButton extends StatefulWidget {
   final OuiColorSet? activeColor;
   // BoxShadow
   final List<BoxShadow>? boxShadow;
+  // Gap between icon and text
+  final double? gap;
   // Click Event
   final void Function()? onTap;
   // Status Change Event
@@ -31,7 +34,9 @@ class OuiButton extends StatefulWidget {
   final MainAxisAlignment mainAxisAlignment;
   // CrossAxisAlignment, default is center
   final CrossAxisAlignment crossAxisAlignment;
-  // Children Widgets
+  // Icon
+  final Icon? icon;
+  // Text
   final String text;
   const OuiButton(
       {super.key,
@@ -43,10 +48,12 @@ class OuiButton extends StatefulWidget {
       this.color,
       this.activeColor,
       this.boxShadow,
+      this.gap,
       this.onTap,
       this.onStatusChange,
       this.mainAxisAlignment = MainAxisAlignment.center,
       this.crossAxisAlignment = CrossAxisAlignment.center,
+      this.icon,
       this.text = "OuiButton"});
 
   @override
@@ -130,6 +137,33 @@ class _OuiButtonState extends State<OuiButton>
     return widget.activeColor ?? OuiTheme.primaryActiveColor;
   }
 
+  List<Widget> generateIcon() {
+    if (widget.icon == null) {
+      return [];
+    }
+    Color? color = widget.icon!.color;
+    if (widget.icon!.color == null) {
+      color = generateColor().sub;
+    }
+    return [
+      Icon(
+        widget.icon?.icon,
+        color: color,
+        size: widget.icon?.size,
+        fill: widget.icon?.fill,
+        weight: widget.icon?.weight,
+        grade: widget.icon?.grade,
+        opticalSize: widget.icon?.opticalSize,
+        shadows: widget.icon?.shadows,
+        semanticLabel: widget.icon?.semanticLabel,
+        textDirection: widget.icon?.textDirection,
+        applyTextScaling: widget.icon?.applyTextScaling,
+        blendMode: widget.icon?.blendMode,
+      ),
+      OuiSpacer(width: widget.gap ?? OuiTheme.buttonGap)
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -192,7 +226,7 @@ class _OuiButtonState extends State<OuiButton>
                 scale: _scaleAnimation,
                 child: Container(
                     width: widget.width,
-                    // height: widget.height ?? OuiTheme.buttonHeight,
+                    height: widget.height,
                     padding: generatePadding(),
                     decoration: BoxDecoration(
                         color: generateColor().main,
@@ -203,6 +237,7 @@ class _OuiButtonState extends State<OuiButton>
                       mainAxisAlignment: widget.mainAxisAlignment,
                       crossAxisAlignment: widget.crossAxisAlignment,
                       children: [
+                        ...generateIcon(),
                         Text(
                           widget.text,
                           style: TextStyle(color: generateColor().sub),
